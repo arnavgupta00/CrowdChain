@@ -91,6 +91,11 @@ export default function CampaignListing() {
   return (
     <div className="min-h-screen bg-gray-900 text-gray-100 p-4">
       <h1 className="text-3xl font-bold mb-6">Active Campaigns</h1>
+      <button className='p-4 bg-blue-600 m-3 rounded-md hover:bg-blue-800 '>
+        <Link href="/campaign/creation">
+          Create Campaign
+        </Link>
+      </button>
       
       <div className="mb-6 flex flex-col md:flex-row gap-4">
         <Input

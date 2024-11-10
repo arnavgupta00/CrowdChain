@@ -183,20 +183,11 @@ export default function CampaignCreation() {
           </div>
 
           <div className="space-y-4">
-            <div>
-              <Label>Campaign Image</Label>
-              <Controller
-                name="image"
-                control={control}
-                render={({ field }) => (
-                  <FileUpload {...field} accept="image/*" />
-                )}
-              />
-            </div>
+           
           </div>
         </div>
 
-        <div className="flex justify-between">
+        <div className="flex gap-8">
           <Button
             type="button"
             onClick={() => setIsPreview(!isPreview)}
