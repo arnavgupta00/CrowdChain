@@ -3,7 +3,7 @@
 import * as snarkjs from "snarkjs";
 
 const CREDENTIAL_HASH = process.env.CREDENTIAL_HASH!;
-const BACKEND_URL = "http://localhost:5000"
+const BACKEND_URL = "https://crowdchain-uapj.onrender.com"
 
 const wasmFile = "./zkpFiles/credentialVerifier.wasm";
 const finalZkey = "./zkpFiles/credentialVerifier_final.zkey";
