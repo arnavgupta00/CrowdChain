@@ -57,7 +57,7 @@ export async function register(email: string, password: string, name: string) {
     });
     const token = await jwt.sign(
       { userId: user.id, email: user.email, name: user.name },
-      process.env.JWT_SECRET!,
+      "CROWDCHAIN",
       {
         expiresIn: "10d",
       }
@@ -103,7 +103,7 @@ export async function login(email: string, password: string) {
 
     const token = await jwt.sign(
       { userId: user.id, email: user.email, name: user.name },
-      process.env.JWT_SECRET!,
+      "CROWDCHAIN",
       {
         expiresIn: "10d",
       }

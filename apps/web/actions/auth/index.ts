@@ -3,7 +3,7 @@
 import * as snarkjs from "snarkjs";
 
 const CREDENTIAL_HASH = process.env.CREDENTIAL_HASH!;
-const BACKEND_URL = process.env.BACKEND_URL;
+const BACKEND_URL = "http://localhost:5000"
 
 const wasmFile = "./zkpFiles/credentialVerifier.wasm";
 const finalZkey = "./zkpFiles/credentialVerifier_final.zkey";
