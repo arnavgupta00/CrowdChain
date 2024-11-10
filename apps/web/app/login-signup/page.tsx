@@ -1,5 +1,4 @@
 "use client";
-
 import { useState } from "react";
 import { Button } from "../../components/ui/button";
 import { Input } from "../../components/ui/input";
@@ -22,13 +21,8 @@ import { Icons } from "../../components/ui/icons";
 import { PasswordStrengthMeter } from "../../components/ui/password-strength-meter";
 import toast from "react-hot-toast";
 import * as snarkjs from "snarkjs";
+import { generateProof } from "../../actions/auth";
 
-const credentialHash = process.env.CREDENTIAL_HASH!;
-
-const backendUrl = process.env.BACKEND_URL!;
-
-const wasmFile = "/zkpFiles/credentialVerifier.wasm";
-const finalZkey = "/zkpFiles/credentialVerifier_final.zkey";
 
 export default function LoginSignup() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -57,27 +51,12 @@ export default function LoginSignup() {
 
   const handleVerify = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log(password)
 
-    const input = {
-      secret: BigInt(password),
-      hash: credentialHash,
-    };
-    console.log("input", input);
-    // Generate the proof in the browser
-    const { proof, publicSignals } = await snarkjs.groth16.fullProve(
-      input,
-      wasmFile,
-      finalZkey
-    );
-    console.log("proof", proof);
-    const response = await fetch(backendUrl + "/zkp/verify-proof", {
-      method: "POST",
-      body: JSON.stringify({ proof, publicSignals }),
-    });
-    console.log("response", response);
-    const data = await response.json();
+    const res = await generateProof(password);
+        console.log(res)
 
-    if (data.success) {
+    if (res.success) {
       toast.success("Proof verified successfully.");
     } else {
       toast.error("Invalid proof.");
