@@ -27,7 +27,7 @@ export default function VideoStream({
   <video
     ref={videoRef}
     style={{
-      transform: isRemote ? "scaleX(1)" : "scaleX(-1)", // Mirror when not remote
+      // transform: isRemote ? "scaleX(1)" : "scaleX(-1)", // Mirror when not remote
     }}
     autoPlay
     controls

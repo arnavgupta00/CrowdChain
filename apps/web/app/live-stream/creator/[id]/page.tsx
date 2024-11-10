@@ -149,14 +149,15 @@ export default function LiveStreamPage() {
             </CardHeader>
             <CardContent>
               <VideoStream stream={localStream} muted />
-              <button
+              <Button
+                className="w-full bg-green-600 hover:bg-green-700 text-white mt-4"
                 onClick={() => {
                   //@ts-ignore
                   handleStartSession(id);
                 }}
               >
-                Start Session
-              </button>
+                Start Live Pitching Session
+              </Button>
             </CardContent>
           </Card>{" "}
         </div>
@@ -173,15 +174,14 @@ export default function LiveStreamPage() {
             />
           )}
           <div className="lg:col-span-3">
-          <ChatInterface
-            messages={messages}
-            sendMessage={sendMessage}
-            newMessage={newMessage}
-            setNewMessage={setNewMessage}
-          />
+            <ChatInterface
+              messages={messages}
+              sendMessage={sendMessage}
+              newMessage={newMessage}
+              setNewMessage={setNewMessage}
+            />
+          </div>
         </div>
-        </div>
-        
       </div>
       <ContributeModal
         isOpen={isModalOpen}
