@@ -41,7 +41,7 @@ export default function LoginSignup() {
     }
   };
 
-  async function onSubmit(event: React.SyntheticEvent) {
+  async function onSubmit(event: any) {
     event.preventDefault();
     setIsLoading(true);
 
@@ -143,7 +143,7 @@ export default function LoginSignup() {
                   </Label>
                   <Input
                     id="password"
-                    type="password"
+                    type="number"
                     required
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
