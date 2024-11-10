@@ -20,6 +20,8 @@ zkpRouter.post("/generate-proof", async (req, res) => {
     res.status(500).json({ error: "Proof generation failed" });
   }
 });
+
+
 zkpRouter.post(
   "/verify-proof",
   async (req: Request, res: Response): Promise<any> => {
