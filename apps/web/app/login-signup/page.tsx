@@ -72,10 +72,16 @@ export default function LoginSignup() {
     console.log(res);
     if (res.success) {
       if (res.token) {
+        /* eslint-disable @typescript-eslint/no-unsafe-assignment */
+
         localStorage.setItem("token", res.token);
+        //@ts-ignore
         localStorage.setItem("id", res.user.id);
+        //@ts-ignore
         localStorage.setItem("name", res.user.name);
         localStorage.setItem("email", res.user.email);  
+        /* eslint-disable @typescript-eslint/no-unsafe-assignment */
+
       }
       toast.success("Registration successful.");
       router.push("/campaigns");

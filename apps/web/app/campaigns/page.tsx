@@ -9,6 +9,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { getCapaigns } from '../../actions/user'
 import { useRouter } from 'next/navigation'
+import { clear } from 'console'
 
 type Campaign = {
   id: number
@@ -34,7 +35,11 @@ export default function CampaignListing() {
   const [searchTerm, setSearchTerm] = useState('')
   const [filter, setFilter] = useState('all')
   const [sort, setSort] = useState('newest')
-  const userId = localStorage.getItem('id')
+  let userId = null
+  if (typeof window !== "undefined") {
+    userId = localStorage.getItem("id");
+  }
+  
 
   const router = useRouter()
 
