@@ -1,48 +1,106 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
-import { Button } from "../../components/ui/button"
-import { Input } from "../../components/ui/input"
-import { Label } from "../../components/ui/label"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../../components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../components/ui/tabs"
-import { Icons } from "../../components/ui/icons"
-import { PasswordStrengthMeter } from "../../components/ui/password-strength-meter"
-import toast from 'react-hot-toast'
+import { useState } from "react";
+import { Button } from "../../components/ui/button";
+import { Input } from "../../components/ui/input";
+import { Label } from "../../components/ui/label";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "../../components/ui/card";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "../../components/ui/tabs";
+import { Icons } from "../../components/ui/icons";
+import { PasswordStrengthMeter } from "../../components/ui/password-strength-meter";
+import toast from "react-hot-toast";
+import * as snarkjs from "snarkjs";
 
+const credentialHash = process.env.CREDENTIAL_HASH!;
+
+const backendUrl = process.env.BACKEND_URL!;
+
+const wasmFile = "/zkpFiles/credentialVerifier.wasm";
+const finalZkey = "/zkpFiles/credentialVerifier_final.zkey";
 
 export default function LoginSignup() {
-  const [isLoading, setIsLoading] = useState<boolean>(false)
-  const [email, setEmail] = useState<string>('')
-  const [password, setPassword] = useState<string>('')
-  const [confirmPassword, setConfirmPassword] = useState<string>('')
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [confirmPassword, setConfirmPassword] = useState<string>("");
 
   async function onSubmit(event: React.SyntheticEvent) {
-    event.preventDefault()
-    setIsLoading(true)
+    event.preventDefault();
+    setIsLoading(true);
 
     setTimeout(() => {
-      setIsLoading(false)
-      toast.success("You have successfully logged in.")
-    }, 3000)
+      setIsLoading(false);
+      toast.success("You have successfully logged in.");
+    }, 3000);
   }
-
+ 
   async function onConnectWallet() {
-    setIsLoading(true)
+    setIsLoading(true);
     setTimeout(() => {
-      setIsLoading(false)
-   
-      toast.success("Wallet Connected successfully.")
-    }, 2000)
+      setIsLoading(false);
+
+      toast.success("Wallet Connected successfully.");
+    }, 2000);
   }
+
+  const handleVerify = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const input = {
+      secret: password,
+      hash: credentialHash,
+    };
+
+    // Generate the proof in the browser
+    const { proof, publicSignals } = await snarkjs.groth16.fullProve(
+      input,
+      wasmFile,
+      finalZkey
+    );
+
+    const response = await fetch(backendUrl + "/zkp/verify-proof", {
+      method: "POST",
+      body: JSON.stringify({ proof, publicSignals }),
+    });
+
+    const data = await response.json();
+
+    if (data.success) {
+      toast.success("Proof verified successfully.");
+    } else {
+      toast.error("Invalid proof.");
+    }
+  };
 
   return (
     <div className="container flex items-center justify-center min-h-screen px-4 py-12">
       <Card className="w-full max-w-md bg-gray-900 bg-opacity-80 border-gray-800">
         <Tabs defaultValue="login" className="w-full">
           <TabsList className="grid w-full grid-cols-2 bg-gray-800">
-            <TabsTrigger value="login" className="data-[state=active]:bg-gray-900">Login</TabsTrigger>
-            <TabsTrigger value="register" className="data-[state=active]:bg-gray-900">Register</TabsTrigger>
+            <TabsTrigger
+              value="login"
+              className="data-[state=active]:bg-gray-900"
+            >
+              Login
+            </TabsTrigger>
+            <TabsTrigger
+              value="register"
+              className="data-[state=active]:bg-gray-900"
+            >
+              Register
+            </TabsTrigger>
           </TabsList>
           <TabsContent value="login">
             <CardHeader>
@@ -54,7 +112,9 @@ export default function LoginSignup() {
             <CardContent className="space-y-4">
               <form onSubmit={onSubmit}>
                 <div className="space-y-2">
-                  <Label htmlFor="email" className="text-gray-200">Email</Label>
+                  <Label htmlFor="email" className="text-gray-200">
+                    Email
+                  </Label>
                   <Input
                     id="email"
                     type="email"
@@ -66,7 +126,9 @@ export default function LoginSignup() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="password" className="text-gray-200">Password</Label>
+                  <Label htmlFor="password" className="text-gray-200">
+                    Password
+                  </Label>
                   <Input
                     id="password"
                     type="password"
@@ -76,7 +138,11 @@ export default function LoginSignup() {
                     className="bg-gray-800 border-gray-700 text-white"
                   />
                 </div>
-                <Button className="w-full mt-4 bg-blue-600 hover:bg-blue-700 text-white" type="submit" disabled={isLoading}>
+                <Button
+                  className="w-full mt-4 bg-blue-600 hover:bg-blue-700 text-white"
+                  type="submit"
+                  disabled={isLoading}
+                >
                   {isLoading && (
                     <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
                   )}
@@ -93,7 +159,13 @@ export default function LoginSignup() {
                   </span>
                 </div>
               </div>
-              <Button variant="outline" type="button" className="w-full bg-gray-800 text-white border-gray-700 hover:bg-gray-700" onClick={onConnectWallet} disabled={isLoading}>
+              <Button
+                variant="outline"
+                type="button"
+                className="w-full bg-gray-800 text-white border-gray-700 hover:bg-gray-700"
+                onClick={onConnectWallet}
+                disabled={isLoading}
+              >
                 {isLoading ? (
                   <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
                 ) : (
@@ -103,7 +175,10 @@ export default function LoginSignup() {
               </Button>
             </CardContent>
             <CardFooter>
-              <Button variant="link" className="px-0 text-sm text-blue-400 hover:text-blue-300">
+              <Button
+                variant="link"
+                className="px-0 text-sm text-blue-400 hover:text-blue-300"
+              >
                 Forgot password?
               </Button>
             </CardFooter>
@@ -118,7 +193,9 @@ export default function LoginSignup() {
             <CardContent className="space-y-4">
               <form onSubmit={onSubmit}>
                 <div className="space-y-2">
-                  <Label htmlFor="email" className="text-gray-200">Email</Label>
+                  <Label htmlFor="email" className="text-gray-200">
+                    Email
+                  </Label>
                   <Input
                     id="email"
                     type="email"
@@ -130,7 +207,9 @@ export default function LoginSignup() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="password" className="text-gray-200">Password</Label>
+                  <Label htmlFor="password" className="text-gray-200">
+                    Password
+                  </Label>
                   <Input
                     id="password"
                     type="password"
@@ -142,7 +221,9 @@ export default function LoginSignup() {
                   <PasswordStrengthMeter password={password} />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="confirm-password" className="text-gray-200">Confirm Password</Label>
+                  <Label htmlFor="confirm-password" className="text-gray-200">
+                    Confirm Password
+                  </Label>
                   <Input
                     id="confirm-password"
                     type="password"
@@ -152,7 +233,12 @@ export default function LoginSignup() {
                     className="bg-gray-800 border-gray-700 text-white"
                   />
                 </div>
-                <Button className="w-full mt-4 bg-blue-600 hover:bg-blue-700 text-white" type="submit" disabled={isLoading}>
+                <Button
+                  className="w-full mt-4 bg-blue-600 hover:bg-blue-700 text-white"
+                  type="submit"
+                  disabled={isLoading}
+                  onClick={handleVerify}
+                >
                   {isLoading && (
                     <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
                   )}
@@ -169,7 +255,13 @@ export default function LoginSignup() {
                   </span>
                 </div>
               </div>
-              <Button variant="outline" type="button" className="w-full bg-gray-800 text-white border-gray-700 hover:bg-gray-700" onClick={onConnectWallet} disabled={isLoading}>
+              <Button
+                variant="outline"
+                type="button"
+                className="w-full bg-gray-800 text-white border-gray-700 hover:bg-gray-700"
+                onClick={onConnectWallet}
+                disabled={isLoading}
+              >
                 {isLoading ? (
                   <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
                 ) : (
@@ -182,5 +274,5 @@ export default function LoginSignup() {
         </Tabs>
       </Card>
     </div>
-  )
+  );
 }
