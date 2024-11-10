@@ -7,8 +7,9 @@ import { createServer } from "http";
 import zkpRouter from "./router/zkpRouter";
 import { socket } from "./router/socket";
 
+
 const app = express();
-const port = 5000;
+const port = process.env.PORT || 5000;
 const httpServer = createServer(app);
 
 // Initialize Socket.IO server
