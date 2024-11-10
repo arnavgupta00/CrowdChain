@@ -143,7 +143,7 @@ export default function LoginSignup() {
                   </Label>
                   <Input
                     id="password"
-                    type="number"
+                    type="text"
                     required
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}

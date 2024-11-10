@@ -24,20 +24,8 @@ import { Label } from "../../../components/ui/label";
 import { DatePicker } from "../../../components/ui/date-picker";
 import { FileUpload } from "../../../components/ui/file-upload";
 import toast from "react-hot-toast";
+import { addCampaign } from "../../../actions/user";
 
-const campaignSchema = z.object({
-  title: z.string().min(5, "Title must be at least 5 characters long"),
-  description: z
-    .string()
-    .min(20, "Description must be at least 20 characters long"),
-  category: z.string().min(1, "Please select a category"),
-  goal: z.number().min(1, "Goal must be greater than 0"),
-  deadline: z.date().min(new Date(), "Deadline must be in the future"),
-  image: z.string().optional(),
-  documents: z.array(z.string()).optional(),
-});
-
-type CampaignFormData = z.infer<typeof campaignSchema>;
 
 export default function CampaignCreation() {
   const [isPreview, setIsPreview] = useState(false);
@@ -46,14 +34,13 @@ export default function CampaignCreation() {
     handleSubmit,
     watch,
     formState: { errors },
-  } = useForm<CampaignFormData>({
-    resolver: zodResolver(campaignSchema),
+  } = useForm<any>({
     defaultValues: {
       title: "",
       description: "",
       category: "",
+      walletAddress: "",
       goal: 0,
-      deadline: new Date(),
       image: "",
       documents: [],
     },
@@ -61,23 +48,19 @@ export default function CampaignCreation() {
 
   const watchedFields = watch();
 
-  const onSubmit = async (data: CampaignFormData) => {
+  const onSubmit = async (data:any) => {
     try {
       // Here you would typically call your API to create the campaign
       // and trigger the smart contract deployment
       console.log("Submitting campaign:", data);
-
-      // Simulating API call
-      
-
-      //   toast({
-      //     title: "Campaign Created",
-      //     description: "Your campaign has been successfully created and deployed.",
-      //   })
-
-      toast.success(
-        "Your campaign has been successfully created and deployed."
-      );
+      const token = localStorage.getItem("token") as string;
+      const { category, deadline, description, goal, image, title, walletAddress } = data;
+      const res = await addCampaign(token, category, deadline, description, goal, title, walletAddress);
+      if (res.success) {
+        toast.success(
+          "Your campaign has been successfully created and deployed."
+        );  
+      }
     } catch (error) {
       console.error("Error creating campaign:", error);
       //   toast({
@@ -112,13 +95,23 @@ export default function CampaignCreation() {
                   />
                 )}
               />
-              {errors.title && (
-                <p className="text-red-500 text-sm mt-1">
-                  {errors.title.message}
-                </p>
-              )}
+              
             </div>
-
+            <div>
+              <Label htmlFor="title">Wallet Address</Label>
+              <Controller
+                name="walletAddress"
+                control={control}
+                render={({ field }) => (
+                  <Input
+                    id="walletAddress"
+                    {...field}
+                    className="bg-gray-800 border-gray-700 text-white"
+                  />
+                )}
+              />
+         
+            </div>
             <div>
               <Label htmlFor="description">Description</Label>
               <Controller
@@ -132,11 +125,7 @@ export default function CampaignCreation() {
                   />
                 )}
               />
-              {errors.description && (
-                <p className="text-red-500 text-sm mt-1">
-                  {errors.description.message}
-                </p>
-              )}
+            
             </div>
 
             <div>
@@ -159,11 +148,7 @@ export default function CampaignCreation() {
                   />
                 )}
               />
-              {errors.category && (
-                <p className="text-red-500 text-sm mt-1">
-                  {errors.category.message}
-                </p>
-              )}
+             
             </div>
 
             <div>
@@ -180,11 +165,7 @@ export default function CampaignCreation() {
                   />
                 )}
               />
-              {errors.goal && (
-                <p className="text-red-500 text-sm mt-1">
-                  {errors.goal.message}
-                </p>
-              )}
+        
             </div>
 
             <div>
@@ -194,11 +175,7 @@ export default function CampaignCreation() {
                 control={control}
                 render={({ field }) => <DatePicker {...field} />}
               />
-              {errors.deadline && (
-                <p className="text-red-500 text-sm mt-1">
-                  {errors.deadline.message}
-                </p>
-              )}
+             
             </div>
           </div>
 
@@ -213,8 +190,6 @@ export default function CampaignCreation() {
                 )}
               />
             </div>
-
-           
           </div>
         </div>
 

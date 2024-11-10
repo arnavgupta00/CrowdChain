@@ -122,7 +122,7 @@ export async function login(email: string, password: string) {
   }
 }
 
-export async function addCampaign(token: string, data:any) {
+export async function addCampaign(token:any, category:any,deadline:any,description:any,goal:any,title:any,walletAddress:any) {
   try {
     const decoded = await jwt.verify(token, process.env.JWT_SECRET!);
     if (!decoded) {
@@ -145,23 +145,24 @@ export async function addCampaign(token: string, data:any) {
       };
     }
 
-    const image = await uploadImageToCloudinary(data.image);
-    const url = image.secure_url;
-
+  
     const campaign = await prisma.campaign.create({
       data: {
-        title: data.title,
-        description: data.description,
-        goal: data.goal,
-        deadline: data.deadline,
+        title: title,
+        description: description,
+        goal: parseInt(goal),
+        deadline: deadline,
         creatorId: user.id,
-        image: url,
+        image: "",
+        walletAddress: walletAddress,
+        category: category,
       },
     });
 
     return {
       success: true,
       message: "Campaign created successfully",
+      campaign
     };
   } catch (error) {
     console.error("Error creating campaign:", error);
@@ -169,5 +170,20 @@ export async function addCampaign(token: string, data:any) {
       success: false,
       message: "Campaign creation failed",
     };
+  }
+}
+
+export async function getCapaigns() {
+  try {
+    const campaigns = await prisma.campaign.findMany({
+      include: {
+        creator: true,
+      },
+    });
+
+    return campaigns;
+  } catch (error) {
+    console.error("Error fetching campaigns:", error);
+    return [];
   }
 }

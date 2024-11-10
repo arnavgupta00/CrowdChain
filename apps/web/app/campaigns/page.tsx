@@ -7,6 +7,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "../../comp
 import { Progress } from "../../components/ui/progress"
 import Link from 'next/link'
 import Image from 'next/image'
+import { getCapaigns } from '../../actions/user'
 
 type Campaign = {
   id: number
@@ -37,8 +38,8 @@ export default function CampaignListing() {
     // Simulating API call to fetch campaigns
     const fetchCampaigns = async () => {
       // Replace this with actual API call
-      const response = await fetch('/api/campaigns')
-      const data = await response.json()
+      const response = await getCapaigns();
+      const data = response;
       setCampaigns(data)
       setFilteredCampaigns(data)
     }
