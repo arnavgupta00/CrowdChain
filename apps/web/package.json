@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",
-    "@prisma/client": "^5.14.0",
+    "@prisma/client": "^5.11.0",
     "@radix-ui/react-dialog": "^1.1.2",
     "@radix-ui/react-label": "^2.1.0",
     "@radix-ui/react-popover": "^1.1.2",
@@ -36,7 +36,6 @@
     "snarkjs": "^0.7.5",
     "socket.io-client": "^4.8.1",
     "tailwind-merge": "^2.5.4",
-
     "zod": "^3.23.8"
   },
   "devDependencies": {

@@ -63,7 +63,7 @@ export default function LiveStreamPage() {
       socket.on("connect", () => {
         console.log("Connected to socket server");
 
-        socket.emit("joinRoom", "roomName"); // Room Name /////////////////////////////////////////
+        socket.emit("joinRoom", id); // Room Name /////////////////////////////////////////
       });
 
       socket.on("broadcastMessage", (message: any) => {
