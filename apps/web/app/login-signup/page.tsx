@@ -36,7 +36,7 @@ export default function LoginSignup() {
   const [password, setPassword] = useState<string>("");
   const [confirmPassword, setConfirmPassword] = useState<string>("");
 
-  async function onSubmit(event: React.SyntheticEvent) {
+  async function onSubmit(event: any) {
     event.preventDefault();
     setIsLoading(true);
 
@@ -59,22 +59,22 @@ export default function LoginSignup() {
     e.preventDefault();
 
     const input = {
-      secret: password,
+      secret: BigInt(password),
       hash: credentialHash,
     };
-
+    console.log("input", input);
     // Generate the proof in the browser
     const { proof, publicSignals } = await snarkjs.groth16.fullProve(
       input,
       wasmFile,
       finalZkey
     );
-
+    console.log("proof", proof);
     const response = await fetch(backendUrl + "/zkp/verify-proof", {
       method: "POST",
       body: JSON.stringify({ proof, publicSignals }),
     });
-
+    console.log("response", response);
     const data = await response.json();
 
     if (data.success) {
@@ -131,7 +131,7 @@ export default function LoginSignup() {
                   </Label>
                   <Input
                     id="password"
-                    type="password"
+                    type="number"
                     required
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
