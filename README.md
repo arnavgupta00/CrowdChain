@@ -1,7 +1,7 @@
 ## You can find move file at
 
 ```
-apps/Aptos
+apps/backend/Aptos
 ```
 
 
