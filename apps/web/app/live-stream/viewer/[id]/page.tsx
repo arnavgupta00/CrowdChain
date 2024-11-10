@@ -22,6 +22,7 @@ import {
 } from "../../../../utils/webrtc";
 import { CALLS_CONFIG } from "../../../../config";
 import { getSocket } from "../../../../components/socket";
+import { getCampaignById } from "../../../../actions/user";
 interface BroadcastMessage {
   sessionId: string;
   trackNameAudio: string | undefined;
@@ -220,56 +221,71 @@ export default function LiveStreamPage() {
     }
   }
 
-  return (
-    // <div className="container mx-auto p-4 min-h-screen bg-gray-900 text-gray-100">
-    //   <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-    //     <div className="lg:col-span-2">
-    //       <Card className="bg-gray-800 border-gray-700">
-    //         <CardHeader>
-    //           <CardTitle className="text-2xl font-bold">Live Stream</CardTitle>
-    //         </CardHeader>
-    <CardContent>
-      <VideoStream stream={remoteStream} isRemote />
-      <Button
-        className="w-full bg-green-600 hover:bg-green-700 text-white"
-        onClick={joinSession}
-      >
-        Join Session
-      </Button>
-    </CardContent>
-    //   {/* </Card>
-    // </div>
-    // <div> */}
+  
+  const [camp, setcamp] = useState<any>();
 
-    //     </div>
-    //     <div>
-    //       <ProjectDetails
-    //         title="Innovative Green Tech"
-    //         description="Revolutionizing sustainable energy solutions for urban environments."
-    //         raised={75000}
-    //         goal={100000}
-    //         daysLeft={15}
-    //       />
-    //       <Button
-    //         className="w-full mt-4 bg-green-600 hover:bg-green-700 text-white"
-    //         onClick={() => setIsModalOpen(true)}
-    //       >
-    //         Contribute Now
-    //       </Button>
-    //     </div>
-    //     <div className="lg:col-span-3">
-    //       <ChatInterface
-    //         messages={messages}
-    //         sendMessage={sendMessage}
-    //         newMessage={newMessage}
-    //         setNewMessage={setNewMessage}
-    //       />
-    //     </div>
-    //   </div>
-    //   <ContributeModal
-    //     isOpen={isModalOpen}
-    //     onClose={() => setIsModalOpen(false)}
-    //   />
-    // </div>
+  useEffect(() => {
+    const f = async () => {
+      //@ts-ignore
+      const res = await getCampaignById(id);
+      setcamp(res);
+    };
+    f();
+  }, []);
+
+
+  return (
+    <div className="container mx-auto p-4 min-h-screen bg-gray-900 text-gray-100">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2">
+          <Card className="bg-gray-800 border-gray-700">
+            <CardHeader>
+              <CardTitle className="text-2xl font-bold">Live Stream</CardTitle>
+            </CardHeader>
+      <CardContent>
+        <VideoStream stream={remoteStream} isRemote />
+        <Button
+          className="w-full bg-green-600 hover:bg-green-700 text-white"
+          onClick={joinSession}
+        >
+          Join Session
+        </Button>
+      </CardContent>
+    </Card>
+
+         </div>
+     <div>
+      {
+        camp && (
+          <ProjectDetails
+            title={camp.title}
+            description={camp.description}
+            raised={camp.fundsRaised}
+            goal={camp.goal}
+            daysLeft={15}
+          />
+        )
+      }
+          <Button
+            className="w-full mt-4 bg-green-600 hover:bg-green-700 text-white"
+            onClick={() => setIsModalOpen(true)}
+          >
+            Contribute Now
+          </Button>
+        </div>
+        <div className="lg:col-span-3">
+          <ChatInterface
+            messages={messages}
+            sendMessage={sendMessage}
+            newMessage={newMessage}
+            setNewMessage={setNewMessage}
+          />
+        </div>
+      </div>
+      <ContributeModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
+    </div>
   );
 }

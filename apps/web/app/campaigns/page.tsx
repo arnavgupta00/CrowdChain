@@ -151,14 +151,16 @@ export default function CampaignListing() {
               </CardFooter>
                   {
                     userId === campaign.creatorId.toString() ? (
-                      <button className='px-4 py-2 bg-blue-500 rounded-lg' onClick={()=>{
+                      <button className='px-4 py-2 bg-blue-500 rounded-lg' onClick={(e)=>{
+                        e.preventDefault()  
                         router.push(`/live-stream/creator/${campaign.id}`)
                       }}>
                         Start Crowd Funding Session
                       </button>
                     ) : (
-                      <button className='px-4 py-2 bg-blue-500 rounded-lg'
-                        onClick={()=>{
+                      <button className='px-4 py-2 bg-blue-500 rounded-lg mb-4'
+                        onClick={(e)=>{
+                          e.preventDefault()
                           router.push(`/live-stream/viewer/${campaign.id}`)
                         }}
                       

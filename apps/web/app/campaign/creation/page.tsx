@@ -25,6 +25,7 @@ import { DatePicker } from "../../../components/ui/date-picker";
 import { FileUpload } from "../../../components/ui/file-upload";
 import toast from "react-hot-toast";
 import { addCampaign } from "../../../actions/user";
+import { useRouter } from "next/navigation";
 
 
 export default function CampaignCreation() {
@@ -47,6 +48,7 @@ export default function CampaignCreation() {
   });
 
   const watchedFields = watch();
+  const router = useRouter();
 
   const onSubmit = async (data:any) => {
     try {
@@ -60,6 +62,7 @@ export default function CampaignCreation() {
         toast.success(
           "Your campaign has been successfully created and deployed."
         );  
+        router.push(`/campaigns`);
       }
     } catch (error) {
       console.error("Error creating campaign:", error);

@@ -189,3 +189,22 @@ export async function getCapaigns() {
     return [];
   }
 }
+
+export async function getCampaignById(id: number) {
+  try {
+    const campaign = await prisma.campaign.findUnique({
+      where: {
+        // @ts-ignore
+        id:parseInt(id) as number,
+      },
+      include: {
+        creator: true,
+      },
+    });
+
+    return campaign;
+
+  } catch (error) {
+    
+  }
+}
