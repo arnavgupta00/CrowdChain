@@ -94,6 +94,7 @@ export default function CampaignListing() {
       <button className='p-4 bg-blue-600 m-3 rounded-md hover:bg-blue-800 '>
         <Link href="/campaign/creation">
           Create Campaign
+        {!campaigns.length && <div className="text-center">Loading...</div>}
         </Link>
       </button>
       
