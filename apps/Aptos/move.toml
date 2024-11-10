@@ -1,0 +1,15 @@
+[package]
+name = "send_message"
+version = "1.0.0"
+authors = []
+upgrade_policy = "compatible"
+
+[addresses]
+MyModule = '0x2dbea0409146a9b4c0e8fedee1545dc53a6f2da6ced331765307931b22998127'
+
+[dependencies]
+AptosFramework = { git = "https://github.com/aptos-labs/aptos-core.git", rev = "testnet", subdir = "aptos-move/framework/aptos-framework", addr = "0x1" }
+
+[dev-addresses]
+
+[dev-dependencies]

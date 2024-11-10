@@ -92,6 +92,7 @@ export default function LoginSignup() {
       if (res.token) {
         localStorage.setItem("token", res.token);
         localStorage.setItem("id", res.user.id.toString());
+        //@ts-ignore
         localStorage.setItem("name", res.user.name);
         localStorage.setItem("email", res.user.email);
         localStorage.setItem("token", res.token);
