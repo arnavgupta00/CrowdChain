@@ -67,6 +67,7 @@ export async function register(email: string, password: string, name: string) {
       success: true,
       message: "User registered successfully",
       token,
+      user
     };
   } catch (error) {
     console.error("Error registering user:", error);
@@ -112,6 +113,7 @@ export async function login(email: string, password: string) {
       success: true,
       message: "Login successful",
       token,
+      user
     };
   } catch (error) {
     console.error("Error logging in user:", error);

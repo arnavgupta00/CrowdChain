@@ -73,6 +73,9 @@ export default function LoginSignup() {
     if (res.success) {
       if (res.token) {
         localStorage.setItem("token", res.token);
+        localStorage.setItem("id", res.user.id);
+        localStorage.setItem("name", res.user.name);
+        localStorage.setItem("email", res.user.email);  
       }
       toast.success("Registration successful.");
       router.push("/campaigns");
@@ -87,6 +90,10 @@ export default function LoginSignup() {
 
     if (res.success) {
       if (res.token) {
+        localStorage.setItem("token", res.token);
+        localStorage.setItem("id", res.user.id);
+        localStorage.setItem("name", res.user.name);
+        localStorage.setItem("email", res.user.email);
         localStorage.setItem("token", res.token);
       }
       toast.success("Login successful.");

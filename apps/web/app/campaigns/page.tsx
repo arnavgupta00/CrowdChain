@@ -8,6 +8,7 @@ import { Progress } from "../../components/ui/progress"
 import Link from 'next/link'
 import Image from 'next/image'
 import { getCapaigns } from '../../actions/user'
+import { useRouter } from 'next/navigation'
 
 type Campaign = {
   id: number
@@ -33,6 +34,9 @@ export default function CampaignListing() {
   const [searchTerm, setSearchTerm] = useState('')
   const [filter, setFilter] = useState('all')
   const [sort, setSort] = useState('newest')
+  const userId = localStorage.getItem('id')
+
+  const router = useRouter()
 
   useEffect(() => {
     // Simulating API call to fetch campaigns
@@ -145,6 +149,28 @@ export default function CampaignListing() {
                     : 'Ended'}
                 </p>
               </CardFooter>
+                  {
+                    userId === campaign.creatorId.toString() ? (
+                      <button className='px-4 py-2 bg-blue-500 rounded-lg' onClick={()=>{
+                        router.push(`/live-stream/creator/${campaign.id}`)
+                      }}>
+                        Start Crowd Funding Session
+                      </button>
+                    ) : (
+                      <button className='px-4 py-2 bg-blue-500 rounded-lg'
+                        onClick={()=>{
+                          router.push(`/live-stream/viewer/${campaign.id}`)
+                        }}
+                      
+                      >
+                        Join Crowd Funding Session
+                      </button>
+                    )
+
+
+                    
+                  }
+
             </Card>
           </Link>
         ))}
