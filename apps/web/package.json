@@ -25,6 +25,7 @@
     "react-dom": "18.3.1",
     "react-hot-toast": "^2.4.1",
     "snarkjs": "^0.7.5",
+    "socket.io-client": "^4.8.1",
     "tailwind-merge": "^2.5.4"
   },
   "devDependencies": {
