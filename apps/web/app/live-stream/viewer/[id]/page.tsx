@@ -1,27 +1,27 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { Button } from "../../../components/ui/button";
+import { Button } from "../../../../components/ui/button";
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
-} from "../../../components/ui/card";
-import { Input } from "../../../components/ui/input";
-import { Progress } from "../../../components/ui/progress";
-import { ChatInterface } from "../../../components/live-stream/chat-interface";
-import { ProjectDetails } from "../../../components/live-stream/project-details";
-import { ContributeModal } from "../../../components/live-stream/contribute-modal";
+} from "../../../../components/ui/card";
+import { Input } from "../../../../components/ui/input";
+import { Progress } from "../../../../components/ui/progress";
+import { ChatInterface } from "../../../../components/live-stream/chat-interface";
+import { ProjectDetails } from "../../../../components/live-stream/project-details";
+import { ContributeModal } from "../../../../components/live-stream/contribute-modal";
 
-import { useRouter } from "next/navigation";
-import VideoStream from "../../../components/VideoStream";
+import { useParams, useRouter } from "next/navigation";
+import VideoStream from "../../../../components/VideoStream";
 import {
   createCallsSession,
   createPeerConnection,
-} from "../../../utils/webrtc";
-import { CALLS_CONFIG } from "../../../config";
-import { getSocket } from "../../../components/socket";
+} from "../../../../utils/webrtc";
+import { CALLS_CONFIG } from "../../../../config";
+import { getSocket } from "../../../../components/socket";
 interface BroadcastMessage {
   sessionId: string;
   trackNameAudio: string | undefined;
@@ -35,6 +35,9 @@ export default function LiveStreamPage() {
   const [newMessage, setNewMessage] = useState("");
   const [socket, setSocket] = useState<any>(null);
   const [objectToPassInSocket, setObjectToPassInSocket] = useState<any>();
+
+  const params = useParams();
+  const id = params.id;
 
   const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null);
   const [connectionStatus, setConnectionStatus] =

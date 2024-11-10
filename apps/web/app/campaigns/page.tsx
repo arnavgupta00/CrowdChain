@@ -40,7 +40,9 @@ export default function CampaignListing() {
       // Replace this with actual API call
       const response = await getCapaigns();
       const data = response;
+      //@ts-ignore
       setCampaigns(data)
+      //@ts-ignore
       setFilteredCampaigns(data)
     }
     fetchCampaigns()
@@ -113,7 +115,7 @@ export default function CampaignListing() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredCampaigns.map((campaign) => (
-          <Link href={`/campaign/${campaign.id}`} key={campaign.id}>
+          <Link href={`/live-stream/viewer/${campaign.id}`} key={campaign.id}>
             <Card className="bg-gray-800 border-gray-700 hover:border-gray-600 transition-colors">
               <CardHeader>
                 <CardTitle className="text-xl font-bold">{campaign.title}</CardTitle>
