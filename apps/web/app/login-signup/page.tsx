@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "../../components/ui/button";
 import { Input } from "../../components/ui/input";
 import { Label } from "../../components/ui/label";
@@ -22,13 +22,24 @@ import { PasswordStrengthMeter } from "../../components/ui/password-strength-met
 import toast from "react-hot-toast";
 import * as snarkjs from "snarkjs";
 import { generateProof } from "../../actions/auth";
-
+import { login, register } from "../../actions/user/index";
+import { useRouter } from "next/navigation";
 
 export default function LoginSignup() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [confirmPassword, setConfirmPassword] = useState<string>("");
+  const [passwordsMatch, setPasswordsMatch] = useState<boolean>(true);
+  const [name, setName] = useState<string>("");
+  const checkPasswordsMatch = () => {
+    if (password !== confirmPassword) {
+      setPasswordsMatch(false);
+      toast.error("Passwords do not match.");
+    } else {
+      setPasswordsMatch(true);
+    }
+  };
 
   async function onSubmit(event: React.SyntheticEvent) {
     event.preventDefault();
@@ -39,7 +50,7 @@ export default function LoginSignup() {
       toast.success("You have successfully logged in.");
     }, 3000);
   }
- 
+
   async function onConnectWallet() {
     setIsLoading(true);
     setTimeout(() => {
@@ -48,18 +59,40 @@ export default function LoginSignup() {
       toast.success("Wallet Connected successfully.");
     }, 2000);
   }
-
-  const handleVerify = async (e: React.FormEvent) => {
+  const router = useRouter();
+  const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log(password)
+    checkPasswordsMatch();
 
-    const res = await generateProof(password);
-        console.log(res)
+    if (!passwordsMatch) {
+      return;
+    }
 
+    const res = await register(email, password, name);
+    console.log(res);
     if (res.success) {
-      toast.success("Proof verified successfully.");
+      if (res.token) {
+        localStorage.setItem("token", res.token);
+      }
+      toast.success("Registration successful.");
+      router.push("/campaigns");
     } else {
       toast.error("Invalid proof.");
+    }
+  };
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const res = await login(email, password);
+
+    if (res.success) {
+      if (res.token) {
+        localStorage.setItem("token", res.token);
+      }
+      toast.success("Login successful.");
+      router.push("/campaigns");
+    } else {
+      toast.error(res.message);
     }
   };
 
@@ -121,6 +154,7 @@ export default function LoginSignup() {
                   className="w-full mt-4 bg-blue-600 hover:bg-blue-700 text-white"
                   type="submit"
                   disabled={isLoading}
+                  onClick={handleLogin}
                 >
                   {isLoading && (
                     <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
@@ -128,30 +162,6 @@ export default function LoginSignup() {
                   Login
                 </Button>
               </form>
-              <div className="relative">
-                <div className="absolute inset-0 flex items-center">
-                  <span className="w-full border-t border-gray-700" />
-                </div>
-                <div className="relative flex justify-center text-xs uppercase">
-                  <span className="bg-gray-900 px-2 text-gray-500">
-                    Or continue with
-                  </span>
-                </div>
-              </div>
-              <Button
-                variant="outline"
-                type="button"
-                className="w-full bg-gray-800 text-white border-gray-700 hover:bg-gray-700"
-                onClick={onConnectWallet}
-                disabled={isLoading}
-              >
-                {isLoading ? (
-                  <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
-                ) : (
-                  <Icons.wallet className="mr-2 h-4 w-4" />
-                )}
-                Web3 Wallet
-              </Button>
             </CardContent>
             <CardFooter>
               <Button
@@ -171,6 +181,20 @@ export default function LoginSignup() {
             </CardHeader>
             <CardContent className="space-y-4">
               <form onSubmit={onSubmit}>
+                <div className="space-y-2">
+                  <Label htmlFor="email" className="text-gray-200">
+                    Name
+                  </Label>
+                  <Input
+                    id="name"
+                    type="text"
+                    placeholder="John Doe"
+                    required
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    className="bg-gray-800 border-gray-700 text-white placeholder-gray-500"
+                  />
+                </div>
                 <div className="space-y-2">
                   <Label htmlFor="email" className="text-gray-200">
                     Email
@@ -216,7 +240,7 @@ export default function LoginSignup() {
                   className="w-full mt-4 bg-blue-600 hover:bg-blue-700 text-white"
                   type="submit"
                   disabled={isLoading}
-                  onClick={handleVerify}
+                  onClick={handleRegister}
                 >
                   {isLoading && (
                     <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
@@ -224,30 +248,6 @@ export default function LoginSignup() {
                   Create account
                 </Button>
               </form>
-              <div className="relative">
-                <div className="absolute inset-0 flex items-center">
-                  <span className="w-full border-t border-gray-700" />
-                </div>
-                <div className="relative flex justify-center text-xs uppercase">
-                  <span className="bg-gray-900 px-2 text-gray-500">
-                    Or continue with
-                  </span>
-                </div>
-              </div>
-              <Button
-                variant="outline"
-                type="button"
-                className="w-full bg-gray-800 text-white border-gray-700 hover:bg-gray-700"
-                onClick={onConnectWallet}
-                disabled={isLoading}
-              >
-                {isLoading ? (
-                  <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
-                ) : (
-                  <Icons.wallet className="mr-2 h-4 w-4" />
-                )}
-                Web3 Wallet
-              </Button>
             </CardContent>
           </TabsContent>
         </Tabs>

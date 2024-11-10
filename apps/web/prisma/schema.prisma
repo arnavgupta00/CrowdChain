@@ -1,12 +1,104 @@
-// prisma/schema.prisma
+generator client {
+  provider = "prisma-client-js"
+}
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL") // Set your DATABASE_URL in the .env file
+  url      = env("DATABASE_URL")
 }
 
-generator client {
-  provider = "prisma-client-js"
+model User {
+  id             Int            @id @default(autoincrement())
+  address        String?        @unique
+  username       String?
+  email          String         @unique
+  password       String
+  name           String?
+  profilePicture String?
+  bio            String?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  campaigns      Campaign[]     @relation("UserCampaigns")
+  comments       Comment[]
+  contributions  Contribution[] @relation("UserContributions")
+  notifications  Notification[]
+  transactions   Transaction[]
+  verification   Verification?
+}
+
+model Verification {
+  id             Int      @id @default(autoincrement())
+  userId         Int      @unique
+  credentialHash String
+  proof          Json
+  publicSignals  Json
+  verifiedAt     DateTime @default(now())
+  user           User     @relation(fields: [userId], references: [id])
+}
+
+model Campaign {
+  id            Int            @id @default(autoincrement())
+  creatorId     Int 
+  title         String
+  description   String?
+  image         String?
+  category      String?
+  goal          Decimal
+  walletAddress String
+  deadline      DateTime
+  fundsRaised   Decimal        @default(0)
+  active        Boolean        @default(true)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  creator       User           @relation("UserCampaigns", fields: [creatorId], references: [id])
+  comments      Comment[]
+  contributions Contribution[] @relation("CampaignContributions")
+  transactions  Transaction[]  @relation("CampaignTransactions")
+}
+
+model Contribution {
+  id              Int      @id @default(autoincrement())
+  campaignId      Int
+  backerId        Int
+  amount          Decimal
+  transactionHash String
+  createdAt       DateTime @default(now())
+  backer          User     @relation("UserContributions", fields: [backerId], references: [id])
+  campaign        Campaign @relation("CampaignContributions", fields: [campaignId], references: [id])
+}
+
+model Transaction {
+  id              Int               @id @default(autoincrement())
+  campaignId      Int?
+  userId          Int?
+  type            TransactionType
+  amount          Decimal
+  transactionHash String
+  status          TransactionStatus
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  campaign        Campaign?         @relation("CampaignTransactions", fields: [campaignId], references: [id])
+  user            User?             @relation(fields: [userId], references: [id])
+}
+
+model Comment {
+  id         Int      @id @default(autoincrement())
+  campaignId Int
+  userId     Int
+  content    String
+  createdAt  DateTime @default(now())
+  campaign   Campaign @relation(fields: [campaignId], references: [id])
+  user       User     @relation(fields: [userId], references: [id])
+}
+
+model Notification {
+  id        Int              @id @default(autoincrement())
+  userId    Int
+  type      NotificationType
+  message   String
+  read      Boolean          @default(false)
+  createdAt DateTime         @default(now())
+  user      User             @relation(fields: [userId], references: [id])
 }
 
 enum TransactionType {
@@ -23,100 +115,4 @@ enum TransactionStatus {
 enum NotificationType {
   CONTRIBUTION_RECEIVED
   CAMPAIGN_UPDATE
-}
-
-model User {
-  id             Int             @id @default(autoincrement())
-  address        String?         @unique
-  username       String?
-  email          String          @unique
-  password       String
-  name           String?
-  profilePicture String?
-  bio            String?
-  isVerified     Boolean         @default(false)
-  createdAt      DateTime        @default(now())
-  updatedAt      DateTime        @updatedAt
-
-  verification   Verification?
-  campaigns      Campaign[]      @relation("UserCampaigns")
-  contributions  Contribution[]  @relation("UserContributions")
-  transactions   Transaction[]
-  comments       Comment[]
-  notifications  Notification[]
-}
-
-model Verification {
-  id             Int      @id @default(autoincrement())
-  user           User     @relation(fields: [userId], references: [id])
-  userId         Int      @unique
-  credentialHash String
-  proof          Json
-  publicSignals  Json
-  verifiedAt     DateTime @default(now())
-}
-
-model Campaign {
-  id            Int             @id @default(autoincrement())
-  creator       User            @relation("UserCampaigns", fields: [creatorId], references: [id])
-  creatorId     Int
-  title         String
-  description   String?
-  image         String?
-  category      String?
-  goal          Decimal
-  deadline      DateTime
-  fundsRaised   Decimal         @default(0)
-  active        Boolean         @default(true)
-  createdAt     DateTime        @default(now())
-  updatedAt     DateTime        @updatedAt
-
-  contributions Contribution[]  @relation("CampaignContributions")
-  comments      Comment[]
-  transactions  Transaction[]   @relation("CampaignTransactions")
-}
-
-model Contribution {
-  id              Int        @id @default(autoincrement())
-  campaign        Campaign   @relation("CampaignContributions", fields: [campaignId], references: [id])
-  campaignId      Int
-  backer          User       @relation("UserContributions", fields: [backerId], references: [id])
-  backerId        Int
-  amount          Decimal
-  transactionHash String
-  createdAt       DateTime   @default(now())
-}
-
-model Transaction {
-  id              Int               @id @default(autoincrement())
-  user            User?             @relation(fields: [userId], references: [id])
-  campaign        Campaign?         @relation("CampaignTransactions", fields: [campaignId], references: [id])
-  campaignId      Int?
-  userId      Int?
-  type            TransactionType
-  amount          Decimal
-  transactionHash String
-  status          TransactionStatus
-  createdAt       DateTime          @default(now())
-  updatedAt       DateTime          @updatedAt
-}
-
-model Comment {
-  id          Int       @id @default(autoincrement())
-  campaign    Campaign  @relation(fields: [campaignId], references: [id])
-  campaignId  Int
-  user        User      @relation(fields: [userId], references: [id])
-  userId      Int
-  content     String
-  createdAt   DateTime  @default(now())
-}
-
-model Notification {
-  id        Int              @id @default(autoincrement())
-  user      User             @relation(fields: [userId], references: [id])
-  userId    Int
-  type      NotificationType
-  message   String
-  read      Boolean          @default(false)
-  createdAt DateTime         @default(now())
 }

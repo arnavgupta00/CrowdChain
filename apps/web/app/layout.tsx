@@ -24,8 +24,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <Toaster/>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gradient-to-br from-gray-900 via-black to-gray-800 text-white relative`}>
+      <Toaster/>
         {children}
       </body>
     </html>
